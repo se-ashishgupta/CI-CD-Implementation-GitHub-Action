@@ -36,11 +36,8 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Pull the latest image
+            echo "Successfully logged into the server."
             sudo docker pull seashishgupta20/cicd:latest
-
             sudo docker stop my-container || true
             sudo docker rm my-container || true
-
-            # Run the new container
             sudo docker run -d --name my-container -p 3005:5173 seashishgupta20/cicd:latest
