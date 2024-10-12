@@ -1,4 +1,4 @@
-name: Build on PR
+name: Build and Deploy to Docker Hub
 
 on:
   push:
@@ -28,3 +28,19 @@ jobs:
 
       - name: Verify Pushed Image
         run: docker pull seashishgupta20/cicd:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Pull the latest image
+            sudo docker pull seashishgupta20/cicd:latest
+
+            sudo docker stop my-container || true
+            sudo docker rm my-container || true
+
+            # Run the new container
+            sudo docker run -d --name my-container -p 3005:5173 seashishgupta20/cicd:latest
